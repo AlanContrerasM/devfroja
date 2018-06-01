@@ -10,6 +10,7 @@ Metodo: arranca(), frena(), metodos y funciones son practicamente lo mismo.
 
 //Vamos a crear el molde para crear objetos
 //clases empiezan con mayuscula
+
 class Perro{
     //metodo constructor, siempre usarlo
     constructor(color, pelaje, raza, tamano){
@@ -21,6 +22,7 @@ class Perro{
         this.tamano = tamano;
     }
 
+    //Son buenas practicas crear methodos para getColor, setColor, etc.
     nacer(){
         console.log("Ya naci");
     }
@@ -85,3 +87,32 @@ var alan = new Persona("Alan", 22,"Hombre", 72, 1.78)
 console.log(alan)
 alan.calcularIMC();
 alan.esMayorDeEdad();
+
+
+class Banco{
+    constructor(titular,cantidad){
+        this.titular = titular
+        this.cantidad = cantidad
+ 
+ 
+    }
+ 
+    ingresar(x){
+        this.cantidad += x
+        console.log (this.cantidad + " Pesos en el banco" )
+    }
+ 
+    retirar(x){
+        this.canntidad -= x
+            console.log (this.cantidad + " Pesos en el banco" )
+    }
+ 
+    getSaldo(){
+        return this.cantidad
+    }
+ }
+ 
+ var santander = new Banco("Pedro Aguirre",5000)
+ console.log(santander)  
+ santander.ingresar(200)
+ console.log(santander.getSaldo())
