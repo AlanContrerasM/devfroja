@@ -1,0 +1,17 @@
+para el backend creamos un nuevo folder
+y corrimos en terminal npm init
+y puros enters.
+
+nos crea package.json, ahi en main lo cambiamos por server.json
+
+luego ya creamos el archivo server.js 
+
+corremos en el folder la instalacion de express
+npm install express --save
+
+ya empezamos a llenar el archivo de server.js
+
+
+despues que definimos el app y asemos el .listen corremos en la terminal npm start
+
+//ya que tenemos nodemon, usamos nodemos y ya tu archivo asi se va actualizar con cada salvada
