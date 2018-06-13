@@ -7,6 +7,7 @@ var express = require('express')
 const bodyParser = require('body-parser')
 var app = express()
 
+//para llamar un archivo que esta en esta carpeta usamos ./ y asi importamos archivos
 const Alumno = require('./mongooseClient')
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -21,6 +22,7 @@ app.post('/api/v1/user/create', (req,res)=>{
         age,
     })
     nuevoAlumno.save((err,alumno)=>{
+        if (err) throw err;
         res.status(201).send(alumno)
     })
 })
@@ -33,6 +35,35 @@ app.get('/api/v1/alumnos', (req,res)=>{
         res.status(400).send(err)
     })
 })
+
+//obtener el alumno por id
+app.get('/api/v1/alumnos/:uid', (req,res)=>{
+   const {uid} = req.params
+   Alumno.findById(uid).exec().then(alumno =>{
+        res.send(alumno)
+   }).catch(err =>{
+       res.status(404).send(err)
+   })
+})
+
+app.delete('/api/v1/alumnos/:uid',(req,res)=>{
+    const {uid} = req.params
+   Alumno.findByIdAndRemove(uid).exec().then(alumno =>{
+       res.status(204).send()
+   }).catch(err =>{
+       res.status(404).send(err)
+   })
+});
+
+//updatear un id
+app.put('/api/v1/alumnos/:uid',(req,res)=>{
+    const {uid} = req.params
+   Alumno.findByIdAndUpdate(uid,{$set:req.body},{new:true}).exec().then(alumno =>{
+        res.send(alumno)
+   }).catch(err =>{
+       res.send(err)
+   })
+});
 
 
 app.listen(3000,()=>{
