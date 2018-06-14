@@ -84,33 +84,30 @@ app.put('/api/v1/articulos/:uid',(req,res)=>{
 //Todo lo de facturas
 
 //crear factura
-
-
+function subTotales(arts){
+    return new Promise((resolve,reject)=>{
+        var sub = 0
+        var counter = 0;
+        for(i=0;i<arts.length;i++){
+            let quant = arts[i].cantidad
+            Articulo.findById(arts[i].id).exec().then(articulo =>{
+                sub += quant*articulo.price
+                counter ++
+                if(counter === arts.length){
+                    resolve(sub)
+                }
+            }).catch(err =>{
+                res.status(404).send(err)
+                reject("Error")
+            })
+            
+        }
+    })
+}
 
 app.post('/api/v1/facturas/create', (req,res)=>{
     const {rfc,articulosComprados} = req.body
     
-
-    function subTotales(arts){
-        return new Promise((resolve,reject)=>{
-            var sub = 0
-            var counter = 0;
-            for(i=0;i<arts.length;i++){
-                let quant = arts[i].cantidad
-                Articulo.findById(arts[i].id).exec().then(articulo =>{
-                    sub += quant*articulo.price
-                    counter ++
-                    if(counter === arts.length){
-                        resolve(sub)
-                    }
-                }).catch(err =>{
-                    res.status(404).send(err)
-                    reject("Error")
-                })
-                
-            }
-        })
-    }
 
     subTotales(articulosComprados).then(response =>{
         var subTotal = response
@@ -175,7 +172,7 @@ app.get('/api/v1/facturas', (req,res)=>{
 })
 
 //obtener la factura por id
-app.get('/api/v1/facturass/:uid', (req,res)=>{
+app.get('/api/v1/facturas/:uid', (req,res)=>{
    const {uid} = req.params
    Factura.findById(uid).exec().then(factura =>{
         res.send(factura)
@@ -196,11 +193,29 @@ app.delete('/api/v1/facturas/:uid',(req,res)=>{
 //updatear un id
 app.put('/api/v1/facturas/:uid',(req,res)=>{
     const {uid} = req.params
-   Factura.findByIdAndUpdate(uid,{$set:req.body},{new:true}).exec().then(factura =>{
-        res.send(factura)
-   }).catch(err =>{
-       res.send(err)
-   })
+    const {rfc,articulosComprados} = req.body
+    
+    subTotales(articulosComprados).then(response =>{
+        var subTotal = response
+        console.log("Numero final",subTotal)
+        var iva = subTotal*.16
+        var total = subTotal + iva
+
+        let nuevoFactura = {
+            _id:uid,
+            rfc,
+            articulosComprados,
+            subTotal,
+            iva,
+            total
+        }
+        return Factura.findByIdAndUpdate(uid,{$set:nuevoFactura},{new:true}).exec()
+        }).then(factura =>{
+            res.send(factura)
+        }).catch(err=>{
+            console.log(err)
+            res.send(err)
+        })
 });
 
 
